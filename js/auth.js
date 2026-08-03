@@ -65,6 +65,16 @@ const Login = {
 
     UI.$("#tema-login").onclick = UI.tema.alternar;
 
+    /* Si el intento anterior falló al leer el perfil, se muestra aquí.
+       No se borra: el manejador del formulario lo necesita porque es
+       un mensaje más preciso que el que devuelve la propia consulta. */
+    const pendiente = Datos.auth.ultimoError;
+    if(pendiente){
+      const err = UI.$("#login-error");
+      err.textContent = Login.traducirError(pendiente);
+      err.classList.remove("oculto");
+    }
+
     UI.$("#form-login").onsubmit = async e => {
       e.preventDefault();
       const btn = UI.$("#btn-entrar");
@@ -75,7 +85,9 @@ const Login = {
         await Auth.entrar(UI.$("#login-email").value.trim(), UI.$("#login-pass").value);
         location.reload();
       }catch(ex){
-        err.textContent = Login.traducirError(ex);
+        /* El error registrado por el vigilante de sesión es más
+           específico que el que devuelve la consulta bloqueada. */
+        err.textContent = Login.traducirError(Datos.auth.ultimoError || ex);
         err.classList.remove("oculto");
         btn.disabled = false; btn.textContent = "Entrar";
       }
@@ -84,6 +96,18 @@ const Login = {
 
   traducirError(ex){
     const c = ex.code || "";
+    const texto = String(ex.message || "");
+
+    if(c === "perfil-inexistente") return texto;
+
+    if(c === "permission-denied" || /insufficient permissions/i.test(texto)){
+      return "Firestore rechazó la consulta por permisos.\n\n" +
+             "Revisa dos cosas:\n" +
+             "1) Que las reglas del archivo firestore.rules estén publicadas en Firebase.\n" +
+             "2) Que tu correo esté escrito igual en js/config.js (ADMINS_INICIALES) " +
+             "y en la función esAdminInicial() de firestore.rules.";
+    }
+
     const m = {
       "auth/invalid-email":"El correo no tiene un formato válido.",
       "auth/user-not-found":"No existe un usuario con ese correo.",

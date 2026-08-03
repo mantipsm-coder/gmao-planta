@@ -16,6 +16,20 @@ const firebaseConfig = {
   appId:             "1:299614058724:web:2f6497e40937915bb494f1"
 };
 
+/* ---- Administradores iniciales -----------------------------
+   ⚠️ ESCRIBE AQUÍ TU CORREO (el mismo que registraste en
+   Firebase → Authentication → Users), todo en minúsculas.
+   La primera vez que entres, el sistema creará tu perfil con
+   rol de Jefe de Mantenimiento. A los demás usuarios los darás
+   de alta desde la propia aplicación.
+
+   El mismo correo debe estar escrito en firestore.rules,
+   dentro de la función esAdminInicial().
+   ------------------------------------------------------------ */
+const ADMINS_INICIALES = [
+  "emiranda@santamonicafishing.com"
+];
+
 /* ---- Datos de la empresa (se muestran en reportes) ---- */
 const EMPRESA = {
   nombre: "Planta de Procesamiento Pesquero",

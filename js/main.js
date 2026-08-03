@@ -12,10 +12,12 @@ const App = {
   async iniciar(){
     UI.tema.iniciar();
 
-    try{
-      await Datos.sembrarSiHaceFalta();
-    }catch(e){
-      console.error("Carga inicial:", e);
+    /* En modo demo los catálogos y los usuarios de prueba deben existir
+       antes del login. Con Firebase, las reglas de seguridad exigen estar
+       autenticado, así que la carga inicial se hace después de entrar. */
+    if(Datos.esDemo()){
+      try{ await Datos.sembrarSiHaceFalta(); }
+      catch(e){ console.error("Carga inicial:", e); }
     }
 
     Datos.auth.alCambiar(async usuario => {
@@ -30,6 +32,14 @@ const App = {
       }
 
       Auth.usuario = usuario;
+
+      /* Primera vez con Firebase: sembrar áreas y tipos de equipo.
+         Solo quien tiene permiso de escritura puede hacerlo. */
+      if(!Datos.esDemo() && ["admin","planificador"].includes(usuario.rol)){
+        try{ await Datos.sembrarSiHaceFalta(); }
+        catch(e){ console.error("Carga inicial:", e); UI.toast("No se pudieron cargar los catálogos iniciales. Revisa las reglas de Firestore.", "err", 6000); }
+      }
+
       UI.$("#vista-login").classList.add("oculto");
       UI.$("#vista-app").classList.remove("oculto");
       App.montarShell();

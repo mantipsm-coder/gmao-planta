@@ -132,6 +132,30 @@ const Datos = (() => {
     return registros.length;
   }
 
+  /* Guardado masivo usando un campo como identificador del documento.
+     Es idempotente: si se ejecuta dos veces, sobrescribe en lugar de duplicar. */
+  async function guardarLoteConId(coleccion, registros, campoId){
+    if(modo === "demo"){
+      const arr = LS.leer(coleccion);
+      registros.forEach(r => {
+        const id = String(r[campoId]);
+        const i = arr.findIndex(x => x.id === id);
+        const reg = { ...r, id };
+        if(i >= 0) arr[i] = reg; else arr.push(reg);
+      });
+      LS.escribir(coleccion, arr);
+      return registros.length;
+    }
+    for(let i = 0; i < registros.length; i += 400){
+      const lote = db.batch();
+      registros.slice(i, i+400).forEach(r => {
+        lote.set(db.collection(coleccion).doc(String(r[campoId])), r, {merge:true});
+      });
+      await lote.commit();
+    }
+    return registros.length;
+  }
+
   async function contar(coleccion){
     if(modo === "demo") return LS.leer(coleccion).length;
     const s = await db.collection(coleccion).get();
@@ -151,6 +175,8 @@ const Datos = (() => {
   }
 
   /* ══════════════ AUTENTICACIÓN ══════════════ */
+  let ultimoErrorPerfil = null;
+
   const authApi = {
     async entrar(email, pass){
       if(modo === "demo"){
@@ -160,8 +186,16 @@ const Datos = (() => {
         localStorage.setItem("gm_demo_sesion", u.id);
         return u;
       }
+      ultimoErrorPerfil = null;
       const cred = await auth.signInWithEmailAndPassword(email, pass);
-      return await perfilDe(cred.user);
+      /* onAuthStateChanged puede haber evaluado el perfil primero;
+         si ya falló ahí, se usa ese mensaje que es el más preciso. */
+      if(ultimoErrorPerfil) throw ultimoErrorPerfil;
+      try{
+        return await perfilDe(cred.user);
+      }catch(e){
+        throw ultimoErrorPerfil || e;
+      }
     },
     async salir(){
       if(modo === "demo"){ localStorage.removeItem("gm_demo_sesion"); return; }
@@ -174,8 +208,22 @@ const Datos = (() => {
         setTimeout(() => cb(u || null), 60);
         return;
       }
-      auth.onAuthStateChanged(async user => cb(user ? await perfilDe(user) : null));
+      auth.onAuthStateChanged(async user => {
+        if(!user) return cb(null);
+        try{
+          cb(await perfilDe(user));
+        }catch(e){
+          /* Sin esto, un perfil rechazado dejaba la aplicación
+             congelada en la pantalla de carga. */
+          console.error("Perfil de usuario:", e);
+          ultimoErrorPerfil = e;
+          try{ await auth.signOut(); }catch(_){}
+          cb(null);
+        }
+      });
     },
+    get ultimoError(){ return ultimoErrorPerfil; },
+    limpiarUltimoError(){ ultimoErrorPerfil = null; },
     async crearUsuario(email, pass, perfil){
       if(modo === "demo"){
         return await guardar("usuarios", { ...perfil, email, passDemo:pass, activo:true });
@@ -192,30 +240,59 @@ const Datos = (() => {
   };
 
   async function perfilDe(user){
-    const doc = await db.collection("usuarios").doc(user.uid).get();
+    const ref = db.collection("usuarios").doc(user.uid);
+    const doc = await ref.get();
     if(doc.exists) return { id:user.uid, email:user.email, ...doc.data() };
-    /* Primer usuario del sistema: se le da rol admin automáticamente */
-    const todos = await db.collection("usuarios").limit(1).get();
-    const rol = todos.empty ? "admin" : "solicitante";
-    const perfil = { nombre:user.email.split("@")[0], email:user.email, rol, activo:true, creadoEn:new Date().toISOString() };
-    await db.collection("usuarios").doc(user.uid).set(perfil);
+
+    /* El perfil todavía no existe. Solo se crea automáticamente si el
+       correo está en la lista de administradores iniciales (config.js).
+       No se consulta la colección completa: las reglas de seguridad
+       —correctamente— no permiten listar usuarios sin perfil previo. */
+    const email = String(user.email || "").toLowerCase();
+    const lista = (typeof ADMINS_INICIALES !== "undefined" ? ADMINS_INICIALES : [])
+      .map(x => String(x).trim().toLowerCase());
+
+    if(!lista.includes(email)){
+      await auth.signOut();
+      const err = new Error(
+        "Tu cuenta existe en Firebase pero todavía no tiene un perfil en el sistema.\n\n" +
+        "· Si eres el administrador: escribe tu correo (" + email + ") en la lista " +
+        "ADMINS_INICIALES del archivo js/config.js y en la función esAdminInicial() de firestore.rules.\n" +
+        "· Si eres personal de la planta: pide al Jefe de Mantenimiento que te registre en «Usuarios y accesos»."
+      );
+      err.code = "perfil-inexistente";
+      throw err;
+    }
+
+    const perfil = {
+      nombre: user.displayName || email.split("@")[0],
+      email: user.email,
+      rol: "admin",
+      activo: true,
+      creadoEn: new Date().toISOString()
+    };
+    await ref.set(perfil);
     return { id:user.uid, ...perfil };
   }
 
   /* ══════════════ CARGA INICIAL ══════════════ */
+  let sembrando = null;
   async function sembrarSiHaceFalta(){
-    /* Ubicaciones */
+    if(sembrando) return sembrando;          // evita ejecuciones simultáneas
+    sembrando = (async () => {
+    /* Ubicaciones · el código del área es el id del documento,
+       así que volver a ejecutarlo nunca duplica registros. */
     const ubis = await listar("ubicaciones", {orden:"codigo", dir:"asc"});
     if(ubis.length === 0){
       const regs = AREAS_PLANTA.map((a, i) => ({
         codigo:a.codigo, nombre:a.nombre, zona:a.zona, orden:i, activo:true
       }));
-      await guardarLote("ubicaciones", regs);
+      await guardarLoteConId("ubicaciones", regs, "codigo");
     }
     /* Tipos de equipo */
     const tipos = await listar("tipos_equipo", {orden:"codigo", dir:"asc"});
     if(tipos.length === 0){
-      await guardarLote("tipos_equipo", TIPOS_EQUIPO.map(t => ({ ...t, activo:true })));
+      await guardarLoteConId("tipos_equipo", TIPOS_EQUIPO.map(t => ({ ...t, activo:true })), "codigo");
     }
     /* Usuarios de prueba (solo modo demo) */
     if(modo === "demo"){
@@ -229,13 +306,16 @@ const Datos = (() => {
         ]);
       }
     }
+    })();
+    try{ return await sembrando; }
+    finally{ sembrando = null; }
   }
 
   /* ══════════════ API PÚBLICA ══════════════ */
   return {
     get modo(){ return modo; },
     esDemo: () => modo === "demo",
-    listar, obtener, guardar, guardarConId, eliminar, guardarLote, contar,
+    listar, obtener, guardar, guardarConId, eliminar, guardarLote, guardarLoteConId, contar,
     subirArchivo, auth:authApi, sembrarSiHaceFalta,
     limpiarDemo(){
       Object.keys(localStorage).filter(k => k.startsWith("gm_demo_")).forEach(k => localStorage.removeItem(k));
