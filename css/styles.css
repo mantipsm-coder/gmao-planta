@@ -116,7 +116,8 @@ a{color:var(--azul);text-decoration:none}
 .grid-form-3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 16px}
 .col-full{grid-column:1/-1}
 .msg-error{background:var(--rojo-suave);color:var(--rojo);padding:10px 12px;
-  border-radius:var(--radio-sm);font-size:13px;margin-bottom:12px}
+  border-radius:var(--radio-sm);font-size:13px;margin-bottom:12px;
+  white-space:pre-line;line-height:1.55;text-align:left}
 
 /* ---------- 6. Botones ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
