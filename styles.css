@@ -1,0 +1,346 @@
+/* ============================================================
+   GMAO · Gestión del Mantenimiento
+   Hoja de estilos única · Tema claro / oscuro
+   ============================================================ */
+
+/* ---------- 1. Variables de tema ---------- */
+:root{
+  --azul:#1d4ed8; --azul-claro:#3b82f6; --azul-suave:#dbeafe;
+  --verde:#059669; --verde-suave:#d1fae5;
+  --ambar:#d97706; --ambar-suave:#fef3c7;
+  --rojo:#dc2626;  --rojo-suave:#fee2e2;
+  --gris:#64748b;
+
+  --fondo:#f1f5f9;
+  --fondo-2:#e2e8f0;
+  --superficie:#ffffff;
+  --superficie-2:#f8fafc;
+  --borde:#e2e8f0;
+  --borde-fuerte:#cbd5e1;
+  --texto:#0f172a;
+  --texto-2:#475569;
+  --texto-3:#94a3b8;
+  --sombra:0 1px 2px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.06);
+  --sombra-alta:0 10px 40px rgba(15,23,42,.18);
+  --radio:12px;
+  --radio-sm:8px;
+  --sidebar-ancho:250px;
+  --topbar-alto:58px;
+  --fuente:'Segoe UI',system-ui,-apple-system,Roboto,'Helvetica Neue',sans-serif;
+}
+
+[data-tema="oscuro"]{
+  --azul:#3b82f6; --azul-claro:#60a5fa; --azul-suave:#1e3a5f;
+  --verde:#10b981; --verde-suave:#064e3b;
+  --ambar:#f59e0b; --ambar-suave:#4a3208;
+  --rojo:#ef4444;  --rojo-suave:#4c1414;
+  --gris:#94a3b8;
+
+  --fondo:#0b1220;
+  --fondo-2:#0f172a;
+  --superficie:#111c30;
+  --superficie-2:#16233c;
+  --borde:#22314e;
+  --borde-fuerte:#33456b;
+  --texto:#e8eefb;
+  --texto-2:#a9b8d4;
+  --texto-3:#6b7fa3;
+  --sombra:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.35);
+  --sombra-alta:0 10px 44px rgba(0,0,0,.6);
+}
+
+/* ---------- 2. Base ---------- */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--fuente);
+  background:var(--fondo);
+  color:var(--texto);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  transition:background .2s,color .2s;
+}
+.oculto{display:none !important}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:15px}
+a{color:var(--azul);text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--borde-fuerte);border-radius:6px;border:2px solid var(--fondo)}
+
+/* ---------- 3. Splash ---------- */
+.splash{position:fixed;inset:0;display:flex;flex-direction:column;gap:14px;
+  align-items:center;justify-content:center;background:var(--fondo);z-index:9999}
+.splash-logo{font-size:52px;animation:girar 2.4s linear infinite}
+.splash-txt{color:var(--texto-2);font-size:14px}
+@keyframes girar{to{transform:rotate(360deg)}}
+
+/* ---------- 4. Login ---------- */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+.login-bg{position:absolute;inset:0;
+  background:
+    radial-gradient(900px 500px at 15% 10%, rgba(59,130,246,.20), transparent 60%),
+    radial-gradient(800px 500px at 85% 90%, rgba(16,185,129,.16), transparent 60%),
+    var(--fondo);
+}
+.login-card{position:relative;width:100%;max-width:410px;background:var(--superficie);
+  border:1px solid var(--borde);border-radius:18px;padding:32px 28px;box-shadow:var(--sombra-alta)}
+.login-brand{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.login-logo{font-size:38px}
+.login-brand h1{font-size:26px;letter-spacing:-.5px}
+.login-brand p{color:var(--texto-2);font-size:13px}
+.btn-tema-flotante{position:absolute;top:14px;right:14px;font-size:18px;
+  width:36px;height:36px;border-radius:50%;display:grid;place-items:center}
+.btn-tema-flotante:hover{background:var(--fondo-2)}
+.demo-usuarios{margin-top:22px;padding-top:18px;border-top:1px dashed var(--borde-fuerte)}
+.demo-titulo{font-size:12px;color:var(--texto-3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.demo-chip{background:var(--superficie-2);border:1px solid var(--borde);border-radius:var(--radio-sm);
+  padding:9px 8px;font-size:12.5px;text-align:left;transition:.15s}
+.demo-chip:hover{border-color:var(--azul);color:var(--azul);transform:translateY(-1px)}
+
+/* ---------- 5. Formularios ---------- */
+.campo{display:block;margin-bottom:14px}
+.campo>span{display:block;font-size:13px;font-weight:600;color:var(--texto-2);margin-bottom:6px}
+.campo>span .req{color:var(--rojo)}
+.campo input,.campo select,.campo textarea{
+  width:100%;padding:10px 12px;border:1px solid var(--borde-fuerte);border-radius:var(--radio-sm);
+  background:var(--superficie);color:var(--texto);transition:.15s}
+.campo input:focus,.campo select:focus,.campo textarea:focus{
+  outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(59,130,246,.18)}
+.campo input:disabled,.campo select:disabled{background:var(--fondo-2);color:var(--texto-3);cursor:not-allowed}
+.campo textarea{resize:vertical;min-height:74px}
+.campo .ayuda{display:block;font-size:11.5px;color:var(--texto-3);margin-top:4px;font-weight:400}
+.grid-form{display:grid;grid-template-columns:repeat(2,1fr);gap:0 16px}
+.grid-form-3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 16px}
+.col-full{grid-column:1/-1}
+.msg-error{background:var(--rojo-suave);color:var(--rojo);padding:10px 12px;
+  border-radius:var(--radio-sm);font-size:13px;margin-bottom:12px;
+  white-space:pre-line;line-height:1.55;text-align:left}
+
+/* ---------- 6. Botones ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:9px 16px;border-radius:var(--radio-sm);font-size:14px;font-weight:600;
+  border:1px solid transparent;transition:.15s;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn-primario{background:var(--azul);color:#fff}
+.btn-primario:hover{filter:brightness(1.1)}
+.btn-secundario{background:var(--superficie);color:var(--texto);border-color:var(--borde-fuerte)}
+.btn-secundario:hover{background:var(--fondo-2)}
+.btn-peligro{background:var(--rojo);color:#fff}
+.btn-peligro:hover{filter:brightness(1.1)}
+.btn-fantasma{color:var(--texto-2)}
+.btn-fantasma:hover{background:var(--fondo-2);color:var(--texto)}
+.btn-bloque{width:100%}
+.btn-sm{padding:6px 11px;font-size:13px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.icono-btn{width:38px;height:38px;border-radius:var(--radio-sm);display:grid;place-items:center;font-size:17px}
+.icono-btn:hover{background:var(--fondo-2)}
+
+/* ---------- 7. Layout app ---------- */
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{height:var(--topbar-alto);flex:0 0 auto;display:flex;align-items:center;gap:12px;
+  padding:0 14px;background:var(--superficie);border-bottom:1px solid var(--borde);z-index:50}
+.topbar-marca{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.topbar-logo{font-size:22px}
+.topbar-nombre{font-weight:800;letter-spacing:-.4px;font-size:17px}
+.chip-modo{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px;
+  background:var(--ambar-suave);color:var(--ambar);text-transform:uppercase;letter-spacing:.5px}
+.topbar-acciones{display:flex;align-items:center;gap:6px}
+.usuario-menu{position:relative}
+.usuario-btn{display:flex;align-items:center;gap:9px;padding:5px 8px;border-radius:var(--radio-sm)}
+.usuario-btn:hover{background:var(--fondo-2)}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--azul);color:#fff;
+  display:grid;place-items:center;font-weight:700;font-size:13px;flex:0 0 auto}
+.usuario-info{display:flex;flex-direction:column;align-items:flex-start;line-height:1.25}
+.usuario-nombre{font-size:13.5px;font-weight:600}
+.usuario-rol{font-size:11px;color:var(--texto-3)}
+.dropdown{position:absolute;right:0;top:calc(100% + 8px);background:var(--superficie);
+  border:1px solid var(--borde);border-radius:var(--radio);box-shadow:var(--sombra-alta);
+  min-width:220px;overflow:hidden;z-index:100}
+.dropdown-cabecera{padding:12px 14px;border-bottom:1px solid var(--borde);display:flex;flex-direction:column;gap:2px}
+.dropdown-cabecera small{color:var(--texto-3);font-size:12px;word-break:break-all}
+.dropdown-item{display:block;width:100%;text-align:left;padding:11px 14px;font-size:14px}
+.dropdown-item:hover{background:var(--fondo-2)}
+
+.cuerpo{flex:1;display:flex;min-height:0}
+.sidebar{width:var(--sidebar-ancho);flex:0 0 auto;background:var(--superficie);
+  border-right:1px solid var(--borde);display:flex;flex-direction:column;
+  overflow-y:auto;transition:transform .22s}
+.sidebar nav{padding:12px 10px;flex:1}
+.nav-grupo{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;
+  color:var(--texto-3);padding:14px 10px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:var(--radio-sm);
+  font-size:14px;color:var(--texto-2);width:100%;text-align:left;font-weight:500;margin-bottom:2px;transition:.13s}
+.nav-item:hover{background:var(--fondo-2);color:var(--texto)}
+.nav-item.activo{background:var(--azul);color:#fff;font-weight:600}
+.nav-item .ico{font-size:17px;width:22px;text-align:center;flex:0 0 auto}
+.nav-item .pill{margin-left:auto;font-size:10px;background:var(--fondo-2);color:var(--texto-3);
+  padding:2px 7px;border-radius:20px;font-weight:700}
+.nav-item.activo .pill{background:rgba(255,255,255,.25);color:#fff}
+.sidebar-pie{padding:12px 18px;border-top:1px solid var(--borde);font-size:11.5px;color:var(--texto-3)}
+.overlay{position:fixed;inset:0;background:rgba(2,6,23,.55);z-index:59}
+
+.contenido{flex:1;overflow-y:auto;padding:22px}
+
+/* ---------- 8. Cabecera de página ---------- */
+.pagina-cab{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.pagina-cab h2{font-size:21px;letter-spacing:-.4px}
+.pagina-cab p{color:var(--texto-2);font-size:13.5px;margin-top:3px}
+.pagina-cab .acciones{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- 9. Tarjetas e indicadores ---------- */
+.tarjeta{background:var(--superficie);border:1px solid var(--borde);border-radius:var(--radio);
+  box-shadow:var(--sombra)}
+.tarjeta-pad{padding:18px}
+.grid-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
+.kpi{background:var(--superficie);border:1px solid var(--borde);border-radius:var(--radio);
+  padding:16px 18px;box-shadow:var(--sombra);position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--azul)}
+.kpi.verde::after{background:var(--verde)} .kpi.ambar::after{background:var(--ambar)}
+.kpi.rojo::after{background:var(--rojo)}  .kpi.gris::after{background:var(--gris)}
+.kpi-label{font-size:12px;color:var(--texto-2);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.kpi-valor{font-size:30px;font-weight:800;letter-spacing:-1px;margin-top:4px;line-height:1.1}
+.kpi-sub{font-size:12px;color:var(--texto-3);margin-top:3px}
+
+/* ---------- 10. Etiquetas ---------- */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;
+  font-size:11.5px;font-weight:700;white-space:nowrap}
+.badge-a{background:var(--rojo-suave);color:var(--rojo)}
+.badge-b{background:var(--ambar-suave);color:var(--ambar)}
+.badge-c{background:var(--verde-suave);color:var(--verde)}
+.badge-azul{background:var(--azul-suave);color:var(--azul)}
+.badge-gris{background:var(--fondo-2);color:var(--texto-2)}
+.badge-verde{background:var(--verde-suave);color:var(--verde)}
+.badge-ambar{background:var(--ambar-suave);color:var(--ambar)}
+.badge-rojo{background:var(--rojo-suave);color:var(--rojo)}
+
+/* ---------- 11. Barra de filtros ---------- */
+.filtros{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;
+  background:var(--superficie);border:1px solid var(--borde);border-radius:var(--radio);padding:12px}
+.filtros .buscador{flex:1;min-width:200px;position:relative}
+.filtros .buscador input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--borde-fuerte);
+  border-radius:var(--radio-sm);background:var(--superficie);color:var(--texto)}
+.filtros .buscador::before{content:'🔍';position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6}
+.filtros select{padding:9px 11px;border:1px solid var(--borde-fuerte);border-radius:var(--radio-sm);
+  background:var(--superficie);color:var(--texto);max-width:190px}
+.filtros input:focus,.filtros select:focus{outline:none;border-color:var(--azul)}
+.contador-res{font-size:12.5px;color:var(--texto-3);margin-left:auto}
+
+/* ---------- 12. Tablas ---------- */
+.tabla-wrap{background:var(--superficie);border:1px solid var(--borde);border-radius:var(--radio);
+  overflow:auto;box-shadow:var(--sombra)}
+table.tabla{width:100%;border-collapse:collapse;font-size:13.5px}
+table.tabla th{background:var(--superficie-2);text-align:left;padding:11px 14px;font-size:11.5px;
+  text-transform:uppercase;letter-spacing:.5px;color:var(--texto-2);font-weight:700;
+  border-bottom:1px solid var(--borde);position:sticky;top:0;white-space:nowrap;z-index:2}
+table.tabla th.ordenable{cursor:pointer;user-select:none}
+table.tabla th.ordenable:hover{color:var(--azul)}
+table.tabla td{padding:11px 14px;border-bottom:1px solid var(--borde);vertical-align:middle}
+table.tabla tbody tr:last-child td{border-bottom:none}
+table.tabla tbody tr:hover{background:var(--superficie-2)}
+.celda-cod{font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-weight:700;color:var(--azul);font-size:12.5px}
+.celda-sec{font-size:11.5px;color:var(--texto-3)}
+.acciones-fila{display:flex;gap:4px;justify-content:flex-end}
+.mini-btn{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font-size:14px}
+.mini-btn:hover{background:var(--fondo-2)}
+.mini-btn.rojo:hover{background:var(--rojo-suave)}
+
+/* Vista tarjetas (móvil) */
+.lista-cards{display:grid;gap:10px}
+.card-eq{background:var(--superficie);border:1px solid var(--borde);border-radius:var(--radio);
+  padding:14px;box-shadow:var(--sombra);display:flex;gap:12px;align-items:flex-start}
+.card-eq .foto{width:52px;height:52px;border-radius:var(--radio-sm);object-fit:cover;
+  background:var(--fondo-2);display:grid;place-items:center;font-size:22px;flex:0 0 auto}
+.card-eq .cuerpo-c{flex:1;min-width:0}
+.card-eq .cuerpo-c h4{font-size:14.5px;margin-bottom:2px}
+.card-eq .meta{font-size:12px;color:var(--texto-3);display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+
+/* ---------- 13. Estado vacío ---------- */
+.vacio{text-align:center;padding:56px 20px;color:var(--texto-3)}
+.vacio .emoji{font-size:46px;display:block;margin-bottom:12px;opacity:.75}
+.vacio h3{font-size:16px;color:var(--texto-2);margin-bottom:6px}
+.vacio p{font-size:13.5px;max-width:420px;margin:0 auto 16px}
+
+/* ---------- 14. Modal ---------- */
+.modal-fondo{position:fixed;inset:0;background:rgba(2,6,23,.6);backdrop-filter:blur(3px);
+  z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;animation:aparecer .15s}
+@keyframes aparecer{from{opacity:0}}
+.modal{background:var(--superficie);border:1px solid var(--borde);border-radius:16px;
+  box-shadow:var(--sombra-alta);width:100%;max-width:640px;max-height:92vh;display:flex;flex-direction:column;
+  animation:subir .2s}
+@keyframes subir{from{transform:translateY(14px);opacity:0}}
+.modal.ancho{max-width:900px}
+.modal-cab{padding:16px 20px;border-bottom:1px solid var(--borde);display:flex;align-items:center;gap:12px}
+.modal-cab h3{font-size:17px;flex:1}
+.modal-cuerpo{padding:20px;overflow-y:auto;flex:1}
+.modal-pie{padding:14px 20px;border-top:1px solid var(--borde);display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap}
+
+/* ---------- 15. Secciones de formulario ---------- */
+.seccion-form{border:1px solid var(--borde);border-radius:var(--radio);margin-bottom:16px;overflow:hidden}
+.seccion-form>header{background:var(--superficie-2);padding:10px 14px;font-size:12.5px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.6px;color:var(--texto-2);border-bottom:1px solid var(--borde)}
+.seccion-form>div{padding:16px 14px 4px}
+
+/* ---------- 16. Criticidad ---------- */
+.crit-resultado{display:flex;align-items:center;gap:16px;background:var(--superficie-2);
+  border:1px dashed var(--borde-fuerte);border-radius:var(--radio);padding:14px;margin-top:6px}
+.crit-puntaje{font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1}
+.crit-clase{font-size:13px;color:var(--texto-2)}
+.crit-badge-grande{margin-left:auto;font-size:15px;padding:8px 18px;border-radius:10px;font-weight:800}
+
+/* ---------- 17. Subida de archivos ---------- */
+.subir{border:2px dashed var(--borde-fuerte);border-radius:var(--radio);padding:18px;text-align:center;
+  cursor:pointer;transition:.15s;color:var(--texto-3);font-size:13px}
+.subir:hover{border-color:var(--azul);color:var(--azul);background:var(--superficie-2)}
+.previsualizacion{display:flex;align-items:center;gap:12px;margin-top:10px}
+.previsualizacion img{width:78px;height:78px;object-fit:cover;border-radius:var(--radio-sm);border:1px solid var(--borde)}
+
+/* ---------- 18. Toasts ---------- */
+.toast-raiz{position:fixed;bottom:20px;right:20px;z-index:900;display:flex;flex-direction:column;gap:9px}
+.toast{background:var(--superficie);border:1px solid var(--borde);border-left:4px solid var(--azul);
+  border-radius:var(--radio-sm);padding:12px 16px;box-shadow:var(--sombra-alta);font-size:13.5px;
+  min-width:260px;max-width:360px;animation:entrar .2s}
+.toast.ok{border-left-color:var(--verde)} .toast.err{border-left-color:var(--rojo)}
+.toast.aviso{border-left-color:var(--ambar)}
+@keyframes entrar{from{transform:translateX(24px);opacity:0}}
+
+/* ---------- 19. Banners ---------- */
+.banner{padding:12px 14px;border-radius:var(--radio-sm);font-size:13px;margin-bottom:16px;line-height:1.5}
+.banner-aviso{background:var(--ambar-suave);color:var(--ambar);border:1px solid rgba(217,119,6,.25)}
+.banner-info{background:var(--azul-suave);color:var(--azul);border:1px solid rgba(59,130,246,.25)}
+
+/* ---------- 20. Barra de progreso ---------- */
+.barra{height:8px;background:var(--fondo-2);border-radius:20px;overflow:hidden}
+.barra>span{display:block;height:100%;background:var(--azul);border-radius:20px;transition:width .4s}
+
+/* ---------- 21. Utilidades ---------- */
+.solo-movil{display:none}
+.fila{display:flex;align-items:center;gap:10px}
+.fila-fin{margin-left:auto}
+.txt-2{color:var(--texto-2)} .txt-3{color:var(--texto-3)}
+.mt-16{margin-top:16px} .mb-12{margin-bottom:12px}
+.sep{height:1px;background:var(--borde);margin:16px 0}
+.chip-lista{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ---------- 22. Responsive ---------- */
+@media (max-width:900px){
+  .grid-form,.grid-form-3{grid-template-columns:1fr}
+}
+@media (max-width:768px){
+  .solo-movil{display:grid}
+  .solo-escritorio{display:none}
+  .contenido{padding:14px}
+  .sidebar{position:fixed;left:0;top:var(--topbar-alto);bottom:0;z-index:60;
+    transform:translateX(-100%);box-shadow:var(--sombra-alta)}
+  .sidebar.abierto{transform:translateX(0)}
+  .overlay{top:var(--topbar-alto)}
+  .pagina-cab .acciones{margin-left:0;width:100%}
+  .pagina-cab .acciones .btn{flex:1}
+  .demo-grid{grid-template-columns:1fr}
+  .modal{max-height:100vh;height:100%;max-width:100%;border-radius:0}
+  .toast-raiz{left:14px;right:14px;bottom:14px}
+  .toast{max-width:none}
+  .kpi-valor{font-size:26px}
+}
