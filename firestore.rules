@@ -1,0 +1,136 @@
+rules_version = '2';
+
+// ============================================================
+// REGLAS DE SEGURIDAD DE FIRESTORE · GMAO
+// Pega este contenido en: Firebase → Firestore Database → Reglas
+// ============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Funciones de apoyo ----------
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    function perfil() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+
+    function rol() {
+      return perfil().rol;
+    }
+
+    function activo() {
+      return autenticado() && perfil().activo == true;
+    }
+
+    function esAdmin() {
+      return activo() && rol() == 'admin';
+    }
+
+    function esPlanificador() {
+      return activo() && rol() in ['admin', 'planificador'];
+    }
+
+    function esMantenimiento() {
+      return activo() && rol() in ['admin', 'planificador', 'tecnico'];
+    }
+
+    // ---------- Usuarios ----------
+    // Cada quien lee su propio perfil; el admin administra todos.
+    match /usuarios/{uid} {
+      allow read:   if autenticado() && (request.auth.uid == uid || esPlanificador());
+      allow create: if autenticado() && request.auth.uid == uid
+                       && request.resource.data.rol == 'solicitante';   // auto-registro limitado
+      allow create, update, delete: if esAdmin();
+    }
+
+    // ---------- Catálogos maestros ----------
+    match /ubicaciones/{id} {
+      allow read:  if activo();
+      allow write: if esPlanificador();
+    }
+
+    match /tipos_equipo/{id} {
+      allow read:  if activo();
+      allow write: if esPlanificador();
+    }
+
+    // ---------- Inventario de equipos ----------
+    match /equipos/{id} {
+      allow read:   if activo();
+      allow create, update: if esPlanificador();
+      allow delete: if esAdmin();
+    }
+
+    // ============================================================
+    // Reglas preparadas para los módulos siguientes
+    // ============================================================
+
+    match /planes/{id} {
+      allow read:  if activo();
+      allow write: if esPlanificador();
+    }
+
+    match /ordenes_trabajo/{id} {
+      allow read:   if activo();
+      allow create: if esMantenimiento();
+      // El técnico solo modifica las órdenes que tiene asignadas
+      allow update: if esPlanificador()
+                    || (activo() && resource.data.tecnicoUid == request.auth.uid)
+                    || (activo() && resource.data.proveedorUid == request.auth.uid);
+      allow delete: if esAdmin();
+    }
+
+    match /solicitudes/{id} {
+      allow read:   if activo() && (esMantenimiento() || resource.data.solicitanteUid == request.auth.uid);
+      allow create: if activo() && request.resource.data.solicitanteUid == request.auth.uid;
+      allow update: if esPlanificador()
+                    || (activo() && resource.data.solicitanteUid == request.auth.uid
+                        && resource.data.estado == 'pendiente');
+      allow delete: if esAdmin();
+    }
+
+    match /formatos/{id} {
+      allow read:  if activo();
+      allow write: if esPlanificador();
+    }
+
+    match /registros_formato/{id} {
+      allow read:   if activo();
+      allow create: if esMantenimiento();
+      allow update: if esPlanificador()
+                    || (activo() && resource.data.registradoPor == request.auth.uid);
+      allow delete: if esAdmin();
+    }
+
+    match /lecturas/{id} {
+      allow read:   if activo();
+      allow create: if esMantenimiento();
+      allow update, delete: if esPlanificador();
+    }
+
+    match /materiales/{id} {
+      allow read:  if activo();
+      allow write: if esPlanificador();
+    }
+
+    match /movimientos_material/{id} {
+      allow read:   if activo();
+      allow create: if esMantenimiento();
+      allow update, delete: if esAdmin();     // los movimientos no se editan, se corrigen con contramovimiento
+    }
+
+    match /procesos/{id} {
+      allow read:   if activo();
+      allow create, update: if esMantenimiento();
+      allow delete: if esAdmin();
+    }
+
+    // ---------- Todo lo demás queda bloqueado ----------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

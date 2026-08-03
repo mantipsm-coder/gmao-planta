@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>GMAO · Gestión del Mantenimiento</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="cargando">
+
+<!-- ══════════════ PANTALLA DE CARGA ══════════════ -->
+<div id="splash" class="splash">
+  <div class="splash-logo">⚙️</div>
+  <div class="splash-txt">Cargando sistema…</div>
+</div>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="vista-login" class="login-wrap oculto">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-logo">⚙️</div>
+      <div>
+        <h1>GMAO</h1>
+        <p>Gestión del Mantenimiento</p>
+      </div>
+    </div>
+
+    <div id="banner-demo" class="banner banner-aviso oculto">
+      <strong>Modo demostración.</strong> No hay Firebase configurado todavía: los datos se guardan solo en este navegador.
+      Entra con cualquiera de los usuarios de prueba para explorar el sistema.
+    </div>
+
+    <form id="form-login" autocomplete="on">
+      <label class="campo">
+        <span>Correo</span>
+        <input type="email" id="login-email" required placeholder="usuario@empresa.com" autocomplete="username">
+      </label>
+      <label class="campo">
+        <span>Contraseña</span>
+        <input type="password" id="login-pass" required placeholder="••••••••" autocomplete="current-password">
+      </label>
+      <div id="login-error" class="msg-error oculto"></div>
+      <button type="submit" class="btn btn-primario btn-bloque" id="btn-entrar">Entrar</button>
+    </form>
+
+    <div id="demo-usuarios" class="demo-usuarios oculto">
+      <p class="demo-titulo">Usuarios de prueba (clic para entrar)</p>
+      <div class="demo-grid">
+        <button class="demo-chip" data-demo="admin">👑 Jefe de Mantenimiento</button>
+        <button class="demo-chip" data-demo="planificador">📋 Planificador</button>
+        <button class="demo-chip" data-demo="tecnico">🔧 Técnico</button>
+        <button class="demo-chip" data-demo="solicitante">🏭 Producción</button>
+      </div>
+    </div>
+
+    <button class="btn-tema-flotante" id="tema-login" title="Cambiar tema">🌙</button>
+  </div>
+</div>
+
+<!-- ══════════════ APLICACIÓN ══════════════ -->
+<div id="vista-app" class="app oculto">
+
+  <header class="topbar">
+    <button class="icono-btn solo-movil" id="btn-menu" aria-label="Menú">☰</button>
+    <div class="topbar-marca">
+      <span class="topbar-logo">⚙️</span>
+      <span class="topbar-nombre">GMAO</span>
+      <span class="chip-modo" id="chip-modo"></span>
+    </div>
+    <div class="topbar-acciones">
+      <button class="icono-btn" id="btn-tema" title="Cambiar tema">🌙</button>
+      <div class="usuario-menu">
+        <button class="usuario-btn" id="btn-usuario">
+          <span class="avatar" id="avatar-usuario">U</span>
+          <span class="usuario-info solo-escritorio">
+            <span class="usuario-nombre" id="nombre-usuario">Usuario</span>
+            <span class="usuario-rol" id="rol-usuario">—</span>
+          </span>
+        </button>
+        <div class="dropdown oculto" id="dropdown-usuario">
+          <div class="dropdown-cabecera">
+            <strong id="dd-nombre">Usuario</strong>
+            <small id="dd-email">—</small>
+          </div>
+          <button class="dropdown-item" id="btn-salir">Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="cuerpo">
+    <aside class="sidebar" id="sidebar">
+      <nav id="nav-principal"></nav>
+      <div class="sidebar-pie">
+        <span>v0.1 · Módulo 1</span>
+      </div>
+    </aside>
+    <div class="overlay oculto" id="overlay-sidebar"></div>
+
+    <main class="contenido" id="contenido"></main>
+  </div>
+</div>
+
+<div id="modal-raiz"></div>
+<div id="toast-raiz" class="toast-raiz"></div>
+
+<!-- Firebase (compat: funciona sin compilar) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+<!-- Aplicación -->
+<script src="js/config.js"></script>
+<script src="js/catalogos.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/datos.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script src="js/vista-tablero.js"></script>
+<script src="js/vista-equipos.js"></script>
+<script src="js/vista-ubicaciones.js"></script>
+<script src="js/vista-usuarios.js"></script>
+<script src="js/vista-proximamente.js"></script>
+</body>
+</html>

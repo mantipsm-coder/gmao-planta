@@ -1,0 +1,47 @@
+rules_version = '2';
+
+// ============================================================
+// REGLAS DE SEGURIDAD DE STORAGE · GMAO
+// Pega este contenido en: Firebase → Storage → Reglas
+// Aquí se guardan fotos de equipos, evidencias de órdenes y manuales.
+// ============================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    // Máximo 8 MB e imágenes o PDF únicamente
+    function archivoValido() {
+      return request.resource.size < 8 * 1024 * 1024
+             && (request.resource.contentType.matches('image/.*')
+                 || request.resource.contentType == 'application/pdf');
+    }
+
+    match /equipos/{archivo} {
+      allow read:  if autenticado();
+      allow write: if autenticado() && archivoValido();
+    }
+
+    match /evidencias/{archivo} {
+      allow read:  if autenticado();
+      allow write: if autenticado() && archivoValido();
+    }
+
+    match /manuales/{archivo} {
+      allow read:  if autenticado();
+      allow write: if autenticado() && archivoValido();
+    }
+
+    match /formatos/{archivo} {
+      allow read:  if autenticado();
+      allow write: if autenticado() && archivoValido();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
